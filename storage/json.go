@@ -6,16 +6,31 @@ import (
 	"os"
 )
 
-const defaultStorage string = "storage.json"
+const defaultStorageName string = "storage.json"
 
 func SaveTask(task models.Task) error {
-	binary, err := json.MarshalIndent(task, "", "	")
+	tasks := []models.Task{}
+	content, err := os.ReadFile(defaultStorageName)
+
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return err
+		}
+	} else if len(content) > 0 {
+		if err := json.Unmarshal(content, &tasks); err != nil {
+			return err
+		}
+	}
+
+	tasks = append(tasks, task)
+
+	binary, err := json.MarshalIndent(tasks, "", "	")
 
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(defaultStorage, binary, 0644)
+	os.WriteFile(defaultStorageName, binary, 0644)
 
 	return err
 }
