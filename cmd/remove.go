@@ -27,6 +27,4 @@ to quickly create a Cobra application.`,
 func init() {
 	rootCmd.AddCommand(removeCmd)
 
-	addCmd.Flags().StringVar(&Title, "title", "", "Task title")
-	addCmd.MarkFlagRequired("title")
 }
