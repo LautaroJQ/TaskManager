@@ -34,3 +34,21 @@ func SaveTask(task models.Task) error {
 
 	return nil
 }
+
+func GetTaskList() ([]models.Task, error) {
+	tasks := []models.Task{}
+
+	content, err := os.ReadFile(defaultStorageName)
+
+	if err != nil {
+		return []models.Task{}, err
+	}
+
+	err = json.Unmarshal(content, &tasks)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
+}

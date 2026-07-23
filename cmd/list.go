@@ -4,6 +4,8 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"TaskManager/models"
+	"TaskManager/storage"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -20,11 +22,17 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
+		tasks, err := storage.GetTaskList()
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		models.PrintTasks(tasks)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(listCmd)
-
 }
