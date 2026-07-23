@@ -32,5 +32,5 @@ func SaveTask(task models.Task) error {
 
 	os.WriteFile(defaultStorageName, binary, 0644)
 
-	return err
+	return nil
 }
