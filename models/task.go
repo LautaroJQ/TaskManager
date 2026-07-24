@@ -17,6 +17,7 @@ type Task struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 	EndAt       time.Time `json:"end_at"`
+	Done        bool      `json:"done"`
 }
 
 const DefaultDuration int = 7
@@ -41,6 +42,7 @@ func CreateTask(Title string, Description string, Duration int) (Task, error) {
 		Description,
 		CreatedAt,
 		EndAt,
+		false,
 	}
 
 	return task, nil
@@ -48,14 +50,25 @@ func CreateTask(Title string, Description string, Duration int) (Task, error) {
 
 func PrintTasks(tasks []Task) error {
 	tabla := tablewriter.NewWriter(os.Stdout)
-	tabla.Header([]string{"ID", "TITLE", "DESCRIPTION", "EXPIRATION DATE"})
-	for i := range tasks {
-		err := tabla.Append([]string{strconv.Itoa(tasks[i].Id), tasks[i].Title, tasks[i].Description, tasks[i].EndAt.Format("'02-01-2006")})
+	tabla.Header([]string{"ID", "TITLE", "DESCRIPTION", "EXPIRATION DATE", "STATUS"})
+	for _, task := range tasks {
+		if task.Description == "" {
+			task.Description = "-"
+		}
+		err := tabla.Append(
+			[]string{
+				strconv.Itoa(task.Id),
+				task.Title,
+				task.Description,
+				task.EndAt.Format("'02-01-2006"),
+				strconv.FormatBool(task.Done),
+			},
+		)
 		if err != nil {
 			return err
 		}
 	}
 
-	err := tabla.Render() // Imprime la tabla directo en pantalla
+	err := tabla.Render()
 	return err
 }
