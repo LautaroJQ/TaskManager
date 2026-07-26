@@ -52,9 +52,6 @@ func PrintTasks(tasks []Task) error {
 	tabla := tablewriter.NewWriter(os.Stdout)
 	tabla.Header([]string{"ID", "TITLE", "DESCRIPTION", "EXPIRATION DATE", "STATUS"})
 	for _, task := range tasks {
-		if task.Description == "" {
-			task.Description = "-"
-		}
 		err := tabla.Append(
 			[]string{
 				strconv.Itoa(task.Id),

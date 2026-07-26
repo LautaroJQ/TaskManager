@@ -47,8 +47,8 @@ to quickly create a Cobra application.`,
 func init() {
 	rootCmd.AddCommand(addCmd)
 
-	addCmd.Flags().StringVar(&Title, "title", "", "Task title")
+	addCmd.LocalFlags().StringVar(&Title, "title", "", "Task title")
 	addCmd.MarkFlagRequired("title")
-	addCmd.Flags().StringVar(&Description, "description", "", "Task description")
-	addCmd.Flags().IntVar(&Duration, "duration", 0, "Task duration")
+	addCmd.LocalFlags().StringVar(&Description, "description", "-", "Task description")
+	addCmd.LocalFlags().IntVar(&Duration, "duration", 0, "Task duration")
 }
