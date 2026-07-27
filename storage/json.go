@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"slices"
 )
 
 const defaultStorageName string = "storage.json"
@@ -86,6 +87,55 @@ func EditTask(id int, taskUpdate models.TaskUpdate) error {
 
 	if !found {
 		return errors.New("ID not found")
+	}
+
+	err = SaveTasks(tasks)
+
+	return err
+}
+
+func DeleteTask(id int) error {
+
+	found := false
+
+	tasks, err := GetTaskList()
+
+	if err != nil {
+		return err
+	}
+
+	for i := range tasks {
+		if tasks[i].Id == id {
+
+			found = true
+			tasks = slices.Delete(tasks, i, i+1)
+			// Importante romper el bucle para no recorrer fuera de los indices cuando se borra un elemento
+			break
+		}
+
+	}
+
+	if !found {
+		return errors.New("Id not found")
+	}
+
+	err = SaveTasks(tasks)
+
+	return err
+}
+
+func MarkTaskDone(id int) error {
+	tasks, err := GetTaskList()
+
+	if err != nil {
+		return err
+	}
+
+	for i := range tasks {
+		if tasks[i].Id == id {
+			tasks[i].Done = true
+			break
+		}
 	}
 
 	err = SaveTasks(tasks)
