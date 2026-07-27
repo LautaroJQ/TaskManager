@@ -86,16 +86,6 @@ TaskManager
 └── tasks.json
 ```
 
-## Próximas funcionalidades
-
-- [ ] Marcar tareas como completadas
-- [ ] Editar tareas
-- [ ] Buscar tareas
-- [ ] Filtros por estado
-- [ ] Ordenamiento
-- [ ] Tests unitarios
-- [ ] Persistencia con SQLite
-
 ## Aprendizajes
 
 Este proyecto fue desarrollado con el objetivo de practicar:
