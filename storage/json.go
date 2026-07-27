@@ -5,12 +5,21 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
-	"time"
-
-	"github.com/spf13/cobra"
 )
 
 const defaultStorageName string = "storage.json"
+
+func SaveTasks(tasks []models.Task) error {
+	binary, err := json.MarshalIndent(tasks, "", "	")
+
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(defaultStorageName, binary, 0644)
+
+	return err
+}
 
 func SaveTask(task models.Task) error {
 	tasks := []models.Task{}
@@ -28,15 +37,9 @@ func SaveTask(task models.Task) error {
 
 	tasks = append(tasks, task)
 
-	binary, err := json.MarshalIndent(tasks, "", "	")
+	err = SaveTasks(tasks)
 
-	if err != nil {
-		return err
-	}
-
-	os.WriteFile(defaultStorageName, binary, 0644)
-
-	return nil
+	return err
 }
 
 func GetTaskList() ([]models.Task, error) {
@@ -57,44 +60,35 @@ func GetTaskList() ([]models.Task, error) {
 	return tasks, nil
 }
 
-func EditTask(id int, title string, description string, duration int, cmd *cobra.Command) error {
+func EditTask(id int, taskUpdate models.TaskUpdate) error {
+	found := false
+	tasks, err := GetTaskList()
 
-	content, err := os.ReadFile(defaultStorageName)
-
-	if err != nil {
-		return err
-	}
-
-	tasks := []models.Task{}
-	task := models.Task{}
-	err = json.Unmarshal(content, &tasks)
-
-	if err != nil {
-		return err
-	}
-
-	for _, task = range tasks {
-		if task.Id == id {
-			break
+	for index := range tasks {
+		if tasks[index].Id != id {
+			continue
 		}
+
+		found = true
+		if taskUpdate.Title != nil {
+			tasks[index].Title = *taskUpdate.Title
+		}
+
+		if taskUpdate.Description != nil {
+			tasks[index].Description = *taskUpdate.Description
+		}
+
+		if taskUpdate.Duration != nil {
+			tasks[index].EndAt = models.CalculateEndDate(tasks[index].CreatedAt, *taskUpdate.Duration)
+		}
+		break
 	}
 
-	if task.Id != id {
-		return errors.New("There is no task with the input ID.")
+	if !found {
+		return errors.New("ID not found")
 	}
 
-	if cmd.Flags().Changed("title") {
-		task.Title = title
-	}
+	err = SaveTasks(tasks)
 
-	if cmd.Flags().Changed("description") {
-		task.Description = description
-	}
-
-	if cmd.Flags().Changed("duration") {
-		Days := time.Hour * 24 * time.Duration(duration)
-		task.EndAt = task.CreatedAt.Add(Days)
-	}
-
-	return nil
+	return err
 }

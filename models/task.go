@@ -31,10 +31,8 @@ func CreateTask(Title string, Description string, Duration int) (Task, error) {
 		Duration = DefaultDuration
 	}
 
-	Days := time.Hour * 24 * time.Duration(Duration)
-
 	CreatedAt := time.Now()
-	EndAt := CreatedAt.Add(Days)
+	EndAt := CalculateEndDate(CreatedAt, Duration)
 
 	task := Task{
 		0,
@@ -68,4 +66,9 @@ func PrintTasks(tasks []Task) error {
 
 	err := tabla.Render()
 	return err
+}
+
+func CalculateEndDate(CreatedAt time.Time, duration int) time.Time {
+	Days := time.Hour * 24 * time.Duration(duration)
+	return CreatedAt.Add(Days)
 }
