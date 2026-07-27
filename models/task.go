@@ -31,10 +31,8 @@ func CreateTask(Title string, Description string, Duration int) (Task, error) {
 		Duration = DefaultDuration
 	}
 
-	Days := time.Hour * 24 * time.Duration(Duration)
-
 	CreatedAt := time.Now()
-	EndAt := CreatedAt.Add(Days)
+	EndAt := CalculateEndDate(CreatedAt, Duration)
 
 	task := Task{
 		0,
@@ -52,13 +50,17 @@ func PrintTasks(tasks []Task) error {
 	tabla := tablewriter.NewWriter(os.Stdout)
 	tabla.Header([]string{"ID", "TITLE", "DESCRIPTION", "EXPIRATION DATE", "STATUS"})
 	for _, task := range tasks {
+		var status string = "Not completed"
+		if task.Done {
+			status = "Completed"
+		}
 		err := tabla.Append(
 			[]string{
 				strconv.Itoa(task.Id),
 				task.Title,
 				task.Description,
-				task.EndAt.Format("'02-01-2006"),
-				strconv.FormatBool(task.Done),
+				task.EndAt.Format("02-01-2006"),
+				status,
 			},
 		)
 		if err != nil {
@@ -68,4 +70,9 @@ func PrintTasks(tasks []Task) error {
 
 	err := tabla.Render()
 	return err
+}
+
+func CalculateEndDate(CreatedAt time.Time, duration int) time.Time {
+	Days := time.Hour * 24 * time.Duration(duration)
+	return CreatedAt.Add(Days)
 }
