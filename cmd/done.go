@@ -11,10 +11,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// removeCmd represents the remove command
-var removeCmd = &cobra.Command{
-	Use:   "remove <id>",
-	Short: "Let you remove a task from the list",
+// doneCmd represents the done command
+var doneCmd = &cobra.Command{
+	Use:   "done <id>",
+	Short: "Mark a task as done",
+	Long:  `This command let you mark a task as done `,
 
 	Args: cobra.ExactArgs(1),
 
@@ -23,18 +24,17 @@ var removeCmd = &cobra.Command{
 
 		if err != nil {
 			fmt.Printf("An error has ocurred during id parsing: %v", err)
+			return
 		}
 
-		err = storage.DeleteTask(id)
+		err = storage.MarkTaskDone(id)
 
 		if err != nil {
-			fmt.Printf("An error has ocurred during id delete: %v", err)
+			fmt.Printf("An error has ocurred: %v", err)
 		}
-
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(removeCmd)
-
+	rootCmd.AddCommand(doneCmd)
 }

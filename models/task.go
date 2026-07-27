@@ -22,7 +22,17 @@ type Task struct {
 
 const DefaultDuration int = 7
 
-func CreateTask(Title string, Description string, Duration int) (Task, error) {
+func getNextID(tasks []Task) int {
+	maxID := 0
+	for _, t := range tasks {
+		if t.Id > maxID {
+			maxID = t.Id
+		}
+	}
+	return maxID + 1
+}
+
+func CreateTask(Title string, Description string, Duration int, existingTasks []Task) (Task, error) {
 	if Title == "" {
 		return Task{}, errors.New("Title cannot be empty")
 	}
@@ -33,14 +43,14 @@ func CreateTask(Title string, Description string, Duration int) (Task, error) {
 
 	CreatedAt := time.Now()
 	EndAt := CalculateEndDate(CreatedAt, Duration)
-
+	Id := getNextID(existingTasks)
 	task := Task{
-		0,
-		Title,
-		Description,
-		CreatedAt,
-		EndAt,
-		false,
+		Id:          Id,
+		Title:       Title,
+		Description: Description,
+		CreatedAt:   CreatedAt,
+		EndAt:       EndAt,
+		Done:        false,
 	}
 
 	return task, nil
@@ -51,6 +61,9 @@ func PrintTasks(tasks []Task) error {
 	tabla.Header([]string{"ID", "TITLE", "DESCRIPTION", "EXPIRATION DATE", "STATUS"})
 	for _, task := range tasks {
 		var status string = "Not completed"
+		if CheckExpiration(task.EndAt) {
+			status = "Expirated"
+		}
 		if task.Done {
 			status = "Completed"
 		}
@@ -75,4 +88,11 @@ func PrintTasks(tasks []Task) error {
 func CalculateEndDate(CreatedAt time.Time, duration int) time.Time {
 	Days := time.Hour * 24 * time.Duration(duration)
 	return CreatedAt.Add(Days)
+}
+
+func CheckExpiration(endDate time.Time) bool {
+	if time.Now().Compare(endDate) == 1 {
+		return true
+	}
+	return false
 }

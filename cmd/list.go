@@ -14,13 +14,8 @@ import (
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Shows you a list of tasks an its status",
+	Long:  `Shows you a list of tasks an its status`,
 	Run: func(cmd *cobra.Command, args []string) {
 		tasks, err := storage.GetTaskList()
 
